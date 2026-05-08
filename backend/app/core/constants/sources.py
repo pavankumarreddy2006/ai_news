@@ -1,0 +1,51 @@
+SOURCE_REGISTRY = [
+    {
+        "name": "OpenAI News",
+        "kind": "rss",
+        "source": "OpenAI",
+        "url": "https://openai.com/news/rss.xml",
+        "category": "OpenAI",
+        "content_type": "news",
+    },
+    {
+        "name": "Hugging Face Blog",
+        "kind": "rss",
+        "source": "Hugging Face",
+        "url": "https://huggingface.co/blog/feed.xml",
+        "category": "AI Tools",
+        "content_type": "tools",
+    },
+    {
+        "name": "Google DeepMind",
+        "kind": "rss",
+        "source": "DeepMind",
+        "url": "https://deepmind.google/blog/rss.xml",
+        "category": "LLMs",
+        "content_type": "research",
+    },
+    {
+        "name": "Product Hunt",
+        "kind": "rss",
+        "source": "Product Hunt",
+        "url": "https://www.producthunt.com/feed",
+        "category": "Startups",
+        "content_type": "launch",
+    },
+    {
+        "name": "Reddit Machine Learning",
+        "kind": "rss",
+        "source": "Reddit",
+        "url": "https://www.reddit.com/r/MachineLearning/.rss",
+        "category": "AI Agents",
+        "content_type": "discussion",
+    },
+    {
+        "name": "GitHub Trending",
+        "kind": "html",
+        "source": "GitHub",
+        "url": "https://github.com/trending/python?since=daily",
+        "category": "Coding AI",
+        "content_type": "repository",
+    },
+]
+
