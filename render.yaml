@@ -31,10 +31,30 @@ services:
         sync: false
       - key: OPENAI_API_KEY
         sync: false
+      - key: OPENROUTER_API_KEY
+        sync: false
+      - key: REDDIT_CLIENT_ID
+        sync: false
+      - key: REDDIT_CLIENT_SECRET
+        sync: false
+      - key: REDDIT_USER_AGENT
+        value: ai-news-platform
+      - key: GITHUB_TOKEN
+        sync: false
+      - key: YOUTUBE_API_KEY
+        sync: false
+      - key: PRODUCTHUNT_TOKEN
+        sync: false
       - key: TELEGRAM_BOT_TOKEN
         sync: false
       - key: TELEGRAM_CHAT_ID
         sync: false
+      - key: BACKEND_URL
+        sync: false
+      - key: FETCH_INTERVAL_MINUTES
+        value: "20"
+      - key: DELETE_OLD_NEWS_HOURS
+        value: "48"
       - key: NEWS_REFRESH_MINUTES
         value: "20"
       - key: CLEANUP_HOURS
@@ -45,6 +65,38 @@ services:
         value: "true"
       - key: REQUEST_TIMEOUT_SECONDS
         value: "12"
+      - key: OPENAI_RSS
+        value: https://openai.com/news/rss.xml
+      - key: TECHCRUNCH_AI_RSS
+        value: https://techcrunch.com/category/artificial-intelligence/feed/
+      - key: VERGE_AI_RSS
+        value: https://www.theverge.com/ai-artificial-intelligence/rss/index.xml
+      - key: ANTHROPIC_RSS
+        value: https://www.anthropic.com/news/rss.xml
+      - key: HUGGINGFACE_RSS
+        value: https://huggingface.co/blog/feed.xml
+      - key: GOOGLE_AI_RSS
+        value: https://blog.google/technology/ai/rss/
+      - key: DEEPMIND_RSS
+        value: https://deepmind.google/discover/blog/rss.xml
+      - key: NVIDIA_AI_RSS
+        value: https://blogs.nvidia.com/blog/category/ai/feed/
+      - key: REDDIT_SUBREDDITS
+        value: artificial,OpenAI,ChatGPT,MachineLearning,singularity,LocalLLaMA,StableDiffusion,ArtificialInteligence,ClaudeAI,AItools,Futurology,technology
+      - key: GITHUB_TOPICS
+        value: ai,llm,agents,rag,automation,openai,langchain,generative-ai,machine-learning
+      - key: GOOGLE_SEARCHES
+        value: latest AI news,trending AI tools,best free AI tools,AI coding tools,AI video tools,AI productivity tools,AI startups,viral AI tools,AI workflows
+      - key: YOUTUBE_CHANNELS
+        value: Two Minute Papers,Matt Wolfe,AI Explained,Fireship,NetworkChuck,Liam Ottley,Wes Roth,The AI Grid
+      - key: AI_BLOGS
+        value: OpenAI Blog,Anthropic Blog,Google AI Blog,DeepMind Blog,NVIDIA AI Blog,Hugging Face Blog,Stability AI Blog,Midjourney Updates,Perplexity Blog
+      - key: TECH_NEWS
+        value: TechCrunch AI,The Verge AI,VentureBeat AI,Ars Technica AI,Wired AI,Analytics India Magazine,Towards Data Science,AI News
+      - key: AI_TOOL_SOURCES
+        value: Futurepedia,There's An AI For That,Product Hunt,GitHub,Reddit
+      - key: AI_RANKING_KEYWORDS
+        value: GPT,OpenAI,Claude,Gemini,Llama,AI Agent,AI Automation,AI Workflow,AI Startup,AI Coding
 
   - type: web
     name: ai-news-frontend

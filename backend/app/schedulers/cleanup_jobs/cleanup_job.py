@@ -8,7 +8,6 @@ settings = get_settings()
 
 
 async def run_cleanup_job(db: Session) -> int:
-    removed = content_orchestrator.cleanup(db, settings.cleanup_hours)
+    removed = content_orchestrator.cleanup(db, settings.retention_hours)
     await live_connection_manager.broadcast({"type": "cleanup", "payload": {"removed": removed}})
     return removed
-

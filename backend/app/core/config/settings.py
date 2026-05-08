@@ -20,8 +20,16 @@ class Settings(BaseSettings):
     database_url: str = f"sqlite:///{DEFAULT_SQLITE_PATH.as_posix()}"
     frontend_url: str = "http://localhost:5173"
     frontend_preview_url: str = ""
+    backend_url: str = "http://127.0.0.1:10000"
     cors_allowed_origins: str = ""
     openai_api_key: str = ""
+    openrouter_api_key: str = ""
+    reddit_client_id: str = ""
+    reddit_client_secret: str = ""
+    reddit_user_agent: str = "ai-news-platform"
+    github_token: str = ""
+    youtube_api_key: str = ""
+    producthunt_token: str = ""
     telegram_bot_token: str = ""
     telegram_default_chat_id: str = Field(
         default="",
@@ -32,10 +40,28 @@ class Settings(BaseSettings):
     telegram_digest_timezone: str = "Asia/Calcutta"
     news_refresh_minutes: int = 20
     cleanup_hours: int = 48
+    fetch_interval_minutes: int = Field(default=20, validation_alias=AliasChoices("FETCH_INTERVAL_MINUTES", "NEWS_REFRESH_MINUTES"))
+    delete_old_news_hours: int = Field(default=48, validation_alias=AliasChoices("DELETE_OLD_NEWS_HOURS", "CLEANUP_HOURS"))
     max_news_items_per_source: int = 12
     enable_background_jobs: bool = True
     enable_live_updates: bool = True
     request_timeout_seconds: float = 12.0
+    openai_rss: str = "https://openai.com/news/rss.xml"
+    techcrunch_ai_rss: str = "https://techcrunch.com/category/artificial-intelligence/feed/"
+    verge_ai_rss: str = "https://www.theverge.com/ai-artificial-intelligence/rss/index.xml"
+    anthropic_rss: str = "https://www.anthropic.com/news/rss.xml"
+    huggingface_rss: str = "https://huggingface.co/blog/feed.xml"
+    google_ai_rss: str = "https://blog.google/technology/ai/rss/"
+    deepmind_rss: str = "https://deepmind.google/discover/blog/rss.xml"
+    nvidia_ai_rss: str = "https://blogs.nvidia.com/blog/category/ai/feed/"
+    reddit_subreddits: str = "artificial,OpenAI,ChatGPT,MachineLearning,singularity,LocalLLaMA,StableDiffusion,ArtificialInteligence,ClaudeAI,AItools,Futurology,technology"
+    github_topics: str = "ai,llm,agents,rag,automation,openai,langchain,generative-ai,machine-learning"
+    google_searches: str = "latest AI news,trending AI tools,best free AI tools,AI coding tools,AI video tools,AI productivity tools,AI startups,viral AI tools,AI workflows"
+    youtube_channels: str = "Two Minute Papers,Matt Wolfe,AI Explained,Fireship,NetworkChuck,Liam Ottley,Wes Roth,The AI Grid"
+    ai_blogs: str = "OpenAI Blog,Anthropic Blog,Google AI Blog,DeepMind Blog,NVIDIA AI Blog,Hugging Face Blog,Stability AI Blog,Midjourney Updates,Perplexity Blog"
+    tech_news: str = "TechCrunch AI,The Verge AI,VentureBeat AI,Ars Technica AI,Wired AI,Analytics India Magazine,Towards Data Science,AI News"
+    ai_tool_sources: str = "Futurepedia,There's An AI For That,Product Hunt,GitHub,Reddit"
+    ai_ranking_keywords: str = "GPT,OpenAI,Claude,Gemini,Llama,AI Agent,AI Automation,AI Workflow,AI Startup,AI Coding"
 
     model_config = SettingsConfigDict(
         env_file=(BACKEND_ENV_FILE, ROOT_ENV_FILE),
@@ -63,6 +89,16 @@ class Settings(BaseSettings):
             "http://127.0.0.1:5173",
         ]
         return list(dict.fromkeys([origin for origin in [*configured, *defaults] if origin]))
+
+    @computed_field
+    @property
+    def refresh_interval_minutes(self) -> int:
+        return self.fetch_interval_minutes
+
+    @computed_field
+    @property
+    def retention_hours(self) -> int:
+        return self.delete_old_news_hours
 
 
 @lru_cache

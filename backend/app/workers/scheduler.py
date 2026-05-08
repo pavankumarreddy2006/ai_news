@@ -24,7 +24,7 @@ def _job_wrapper(coro):
 def start_scheduler() -> None:
     if not settings.enable_background_jobs or scheduler.running:
         return
-    scheduler.add_job(_job_wrapper(run_refresh_job), "interval", minutes=settings.news_refresh_minutes, id="refresh-news")
+    scheduler.add_job(_job_wrapper(run_refresh_job), "interval", minutes=settings.refresh_interval_minutes, id="refresh-news")
     scheduler.add_job(_job_wrapper(run_cleanup_job), "interval", hours=12, id="cleanup-news")
     scheduler.add_job(
         _job_wrapper(run_telegram_job),
