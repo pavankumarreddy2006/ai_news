@@ -13,19 +13,33 @@ logger = get_logger(__name__)
 
 
 class FeedCollector:
+    def __init__(self) -> None:
+        self._last_health: list[dict] = []
+
     def fetch_all(self) -> list[dict]:
         records: list[dict] = []
+        health: list[dict] = []
         for source in self._source_registry():
+            status = {"source": source["source"], "name": source["name"], "kind": source["kind"], "status": "ok", "url": source["url"]}
             try:
                 if source["kind"] == "rss":
-                    records.extend(self._fetch_rss(source))
+                    items = self._fetch_rss(source)
                 else:
-                    records.extend(self._fetch_html(source))
+                    items = self._fetch_html(source)
+                records.extend(items)
+                status["items"] = len(items)
             except Exception as exc:
                 logger.warning("Collector failed for %s: %s", source["source"], exc)
+                status["status"] = "degraded"
+                status["reason"] = str(exc)
+                status["items"] = 0
+            health.append(status)
+        self._last_health = health
         return records
 
     def source_health(self) -> list[dict]:
+        if self._last_health:
+            return self._last_health
         health: list[dict] = []
         for source in self._source_registry():
             status = {"source": source["source"], "name": source["name"], "kind": source["kind"], "status": "ok", "url": source["url"]}

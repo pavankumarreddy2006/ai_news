@@ -112,8 +112,8 @@ services:
         destination: /index.html
     envVars:
       - key: VITE_API_URL
-        value: ""
+        value: https://ai-news-backend.onrender.com
       - key: VITE_API_BASE_URL
-        value: ""
+        value: https://ai-news-backend.onrender.com
       - key: VITE_WS_URL
-        value: ""
+        value: wss://ai-news-backend.onrender.com

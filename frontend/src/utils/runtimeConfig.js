@@ -1,17 +1,22 @@
 const normalizeUrl = (value) => value?.replace(/\/+$/, "") || "";
+const DEFAULT_LOCAL_BACKEND = "http://localhost:10000";
+const DEFAULT_RENDER_BACKEND = "https://ai-news-backend.onrender.com";
 
 const inferRenderBackendOrigin = () => {
   if (typeof window === "undefined") {
-    return "http://localhost:10000";
+    return DEFAULT_LOCAL_BACKEND;
   }
   const { origin, hostname } = window.location;
   if (hostname.includes("localhost") || hostname === "127.0.0.1") {
-    return "http://localhost:10000";
+    return DEFAULT_LOCAL_BACKEND;
   }
   if (hostname.includes("frontend")) {
     return origin.replace("frontend", "backend");
   }
-  return origin;
+  if (hostname.endsWith(".onrender.com")) {
+    return DEFAULT_RENDER_BACKEND;
+  }
+  return DEFAULT_RENDER_BACKEND;
 };
 
 export const getApiBaseUrl = () =>
