@@ -15,5 +15,5 @@ export const platformApi = {
   subscribeTelegram: async (payload) => (await apiClient.post("/api/telegram/subscribe", payload)).data,
   sendTelegramDigest: async () => (await apiClient.post("/api/telegram/send-digest")).data,
   getLiveStatus: async () => (await apiClient.get("/api/live")).data,
+  getWorkflowStatus: async () => (await apiClient.get("/api/workflow")).data,
 };
-

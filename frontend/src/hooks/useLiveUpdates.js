@@ -11,7 +11,10 @@ export function useLiveUpdates() {
     const socket = new WebSocket(`${base}/ws/live-updates`);
     socket.onmessage = (event) => {
       const payload = JSON.parse(event.data);
-      const message = payload.payload?.message || `${payload.type} event received`;
+      const message = payload.payload?.message
+        || payload.payload?.refreshed_at
+        || payload.payload?.reason
+        || `${payload.type} event received`;
       addLiveEvent({ type: payload.type, message, time: new Date().toLocaleTimeString() });
       addNotification({ title: "Live AI Update", description: message });
     };

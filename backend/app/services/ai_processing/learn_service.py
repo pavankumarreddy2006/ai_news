@@ -8,6 +8,7 @@ class LearnService:
             topic=cleaned,
             explanation=f"{cleaned} means software doing useful tasks that usually need human thinking, like understanding text, generating ideas, or making predictions.",
             why_it_matters="It helps people save time, automate work, and build smarter products.",
+            best_for="Beginners, students, builders, and professionals exploring practical AI use cases.",
             steps=[
                 "Start with the problem AI is trying to solve.",
                 "See one beginner-friendly example.",
@@ -21,4 +22,3 @@ class LearnService:
             ],
             difficulty="Beginner",
         )
-

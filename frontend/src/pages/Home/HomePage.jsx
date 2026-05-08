@@ -2,6 +2,7 @@ import { Helmet } from "react-helmet-async";
 import { useQuery } from "@tanstack/react-query";
 import { HeroPanel } from "@/components/dashboard/HeroPanel";
 import { StatsGrid } from "@/components/dashboard/StatsGrid";
+import { WorkflowStatusPanel } from "@/components/dashboard/WorkflowStatusPanel";
 import { SectionHeader } from "@/components/widgets/SectionHeader";
 import { LiveUpdatesPanel } from "@/components/widgets/LiveUpdatesPanel";
 import { TeachMePanel } from "@/components/ai/TeachMePanel";
@@ -15,6 +16,7 @@ export function HomePage() {
   const { data: news = [], isLoading: newsLoading, isError: newsError } = useNewsQuery();
   const { data: tools = [], isLoading: toolsLoading } = useToolsQuery();
   const { data: categories = { categories: [] } } = useQuery({ queryKey: ["categories"], queryFn: platformApi.getCategories });
+  const { data: workflow } = useQuery({ queryKey: ["workflow"], queryFn: platformApi.getWorkflowStatus, refetchInterval: 30000 });
 
   return (
     <div className="space-y-8">
@@ -31,6 +33,7 @@ export function HomePage() {
           { label: "Beginner mode", value: "On", note: "Every article includes easy English context." },
         ]}
       />
+      <WorkflowStatusPanel workflow={workflow} />
       <div className="grid gap-8 xl:grid-cols-[1.7fr_1fr]">
         <section>
           <SectionHeader eyebrow="Top Stories" title="Ranked AI News" description="The strongest AI launches, tutorials, tools, and startup shifts happening right now." />

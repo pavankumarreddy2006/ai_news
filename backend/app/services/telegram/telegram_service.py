@@ -5,6 +5,7 @@ from sqlalchemy.orm import Session
 
 from app.core.config.settings import get_settings
 from app.database.repositories.user_repository import UserRepository
+from app.services.websocket.connection_manager import workflow_state
 
 settings = get_settings()
 
@@ -26,7 +27,10 @@ class TelegramService:
     def build_digest(self, top_articles: list) -> str:
         lines = ["Good morning. Here is your beginner-friendly AI digest:"]
         for item in top_articles[:5]:
-            lines.append(f"- {item.title}: {item.easy_summary}")
+            lines.append(f"- {item.title}: {getattr(item, 'easy_summary', '')}")
+            why_it_matters = getattr(item, "why_it_matters", "")
+            if why_it_matters:
+                lines.append(f"  Why it matters: {why_it_matters}")
         return "\n".join(lines)
 
     async def send_digest(self, db: Session, top_articles: list) -> dict:
@@ -57,4 +61,9 @@ class TelegramService:
             status=status,
         )
         db.commit()
+        workflow_state.update(
+            telegram_ready=bool(settings.telegram_bot_token),
+            last_digest_at=datetime.utcnow().isoformat(),
+            last_digest_result={"sent": sent, "status": status, "reason": reason},
+        )
         return {"sent": sent, "message": message, "status": status, "reason": reason}

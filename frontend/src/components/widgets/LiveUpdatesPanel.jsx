@@ -11,7 +11,10 @@ export function LiveUpdatesPanel() {
       <div className="space-y-3">
         {liveEvents.length ? liveEvents.map((event) => (
           <div key={event.id} className="rounded-2xl border border-white/8 bg-white/5 p-3 text-sm">
-            <p className="text-white">{event.message}</p>
+            <div className="flex items-center justify-between gap-3">
+              <p className="text-white">{event.message}</p>
+              <span className="rounded-full bg-white/5 px-2 py-1 text-[10px] uppercase tracking-[0.24em] text-slate-300">{event.type}</span>
+            </div>
             <p className="mt-1 text-xs text-slate-400">{event.time}</p>
           </div>
         )) : <p className="text-sm text-slate-400">Waiting for AI launches, trending shifts, and morning digest events.</p>}

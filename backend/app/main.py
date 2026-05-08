@@ -5,12 +5,13 @@ from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import text
 
 from app.api.middleware.error_handler import unhandled_exception_handler
-from app.api.routes import categories, health, learn, live, news, preferences, recommendations, search, summary, telegram, tools, trending
+from app.api.routes import categories, health, learn, live, news, preferences, recommendations, search, summary, telegram, tools, trending, workflow
 from app.api.dependencies.services import content_orchestrator
 from app.core.config.settings import get_settings
 from app.core.logging.logger import configure_logging, get_logger
 from app.database.session.engine import SessionLocal
 from app.database.session.init_db import initialize_database
+from app.services.websocket.connection_manager import workflow_state
 from app.workers.scheduler import start_scheduler, stop_scheduler
 
 settings = get_settings()
@@ -20,10 +21,16 @@ logger = get_logger(__name__)
 
 @asynccontextmanager
 async def lifespan(_: FastAPI):
+    workflow_state.update(app_started=True, live_updates_ready=settings.enable_live_updates)
     initialize_database()
+    workflow_state.update(database_ready=True)
     db = SessionLocal()
     try:
         db.execute(text("SELECT 1"))
+        workflow_state.update(
+            keys_valid=bool(settings.openai_api_key or settings.openrouter_api_key or settings.github_token or settings.telegram_bot_token),
+            telegram_ready=bool(settings.telegram_bot_token),
+        )
         content_orchestrator.run_refresh(db)
     except Exception as exc:
         logger.exception("Startup initialization failed: %s", exc)
@@ -62,6 +69,7 @@ app.include_router(learn.router)
 app.include_router(recommendations.router)
 app.include_router(preferences.router)
 app.include_router(live.router)
+app.include_router(workflow.router)
 
 
 @app.websocket("/ws/live-updates")

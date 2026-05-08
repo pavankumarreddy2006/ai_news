@@ -26,3 +26,32 @@ class ConnectionManager:
 
 live_connection_manager = ConnectionManager()
 
+
+class WorkflowState:
+    def __init__(self) -> None:
+        self.state = {
+            "app_started": False,
+            "database_ready": False,
+            "telegram_ready": False,
+            "scheduler_ready": False,
+            "live_updates_ready": False,
+            "keys_valid": False,
+            "aggregation_ready": False,
+            "last_refresh_at": None,
+            "last_cleanup_at": None,
+            "last_digest_at": None,
+            "last_refresh_result": {},
+            "last_cleanup_result": {},
+            "last_digest_result": {},
+            "source_health": [],
+        }
+
+    def update(self, **payload) -> dict:
+        self.state.update(payload)
+        return self.snapshot()
+
+    def snapshot(self) -> dict:
+        return dict(self.state)
+
+
+workflow_state = WorkflowState()

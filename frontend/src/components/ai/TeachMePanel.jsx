@@ -19,13 +19,19 @@ export function TeachMePanel() {
         <div className="mt-5 space-y-3 text-sm text-slate-300">
           <p>{mutation.data.explanation}</p>
           <p><span className="text-white">Why it matters:</span> {mutation.data.why_it_matters}</p>
+          <p><span className="text-white">Best for:</span> {mutation.data.best_for}</p>
           <p><span className="text-white">Difficulty:</span> {mutation.data.difficulty}</p>
           <div className="space-y-1">
             {mutation.data.steps.map((step) => <p key={step}>{step}</p>)}
+          </div>
+          <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+            <p className="text-white">Real-world examples</p>
+            <div className="mt-2 space-y-1">
+              {mutation.data.examples.map((example) => <p key={example}>{example}</p>)}
+            </div>
           </div>
         </div>
       ) : null}
     </section>
   );
 }
-

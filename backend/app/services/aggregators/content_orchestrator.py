@@ -14,6 +14,7 @@ from app.services.analytics.trend_service import TrendService
 from app.services.aggregators.feed_collector import FeedCollector
 from app.services.ranking.ranking_service import RankingService
 from app.services.summarization.simple_english_service import SimpleEnglishService
+from app.services.websocket.connection_manager import workflow_state
 
 
 FALLBACK_TOOLS = [
@@ -182,13 +183,34 @@ class ContentOrchestrator:
                 )
             articles = self.news_repository.list_news(db, limit=30)
         self.trending_repository.replace_all(db, self.trend_service.build_topics(articles))
+        source_health = self.collector.source_health()
         db.commit()
-        return {"fetched": len(raw), "stored": stored, "categories": DEFAULT_CATEGORIES, "tool_categories": TOOL_CATEGORIES}
+        result = {
+            "fetched": len(raw),
+            "stored": stored,
+            "categories": DEFAULT_CATEGORIES,
+            "tool_categories": TOOL_CATEGORIES,
+            "sources_checked": len(source_health),
+            "source_health": source_health,
+            "fallback_used": not bool(raw),
+            "refreshed_at": datetime.now(timezone.utc).isoformat(),
+        }
+        workflow_state.update(
+            aggregation_ready=True,
+            last_refresh_at=result["refreshed_at"],
+            last_refresh_result=result,
+            source_health=source_health,
+        )
+        return result
 
     def cleanup(self, db: Session, hours: int) -> int:
         cutoff = datetime.now(timezone.utc) - timedelta(hours=hours)
         removed = self.news_repository.cleanup_before(db, cutoff)
         db.commit()
+        workflow_state.update(
+            last_cleanup_at=datetime.now(timezone.utc).isoformat(),
+            last_cleanup_result={"removed": removed, "retention_hours": hours},
+        )
         return removed
 
     def _seed_tools(self, db: Session) -> None:

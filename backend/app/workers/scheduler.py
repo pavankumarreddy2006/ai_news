@@ -5,6 +5,7 @@ from app.database.session.engine import SessionLocal
 from app.schedulers.cleanup_jobs.cleanup_job import run_cleanup_job
 from app.schedulers.news_jobs.refresh_job import run_refresh_job
 from app.schedulers.telegram_jobs.digest_job import run_telegram_job
+from app.services.websocket.connection_manager import workflow_state
 
 settings = get_settings()
 scheduler = AsyncIOScheduler()
@@ -23,6 +24,7 @@ def _job_wrapper(coro):
 
 def start_scheduler() -> None:
     if not settings.enable_background_jobs or scheduler.running:
+        workflow_state.update(scheduler_ready=settings.enable_background_jobs)
         return
     scheduler.add_job(_job_wrapper(run_refresh_job), "interval", minutes=settings.refresh_interval_minutes, id="refresh-news")
     scheduler.add_job(_job_wrapper(run_cleanup_job), "interval", hours=12, id="cleanup-news")
@@ -35,8 +37,10 @@ def start_scheduler() -> None:
         id="telegram-digest",
     )
     scheduler.start()
+    workflow_state.update(scheduler_ready=True)
 
 
 def stop_scheduler() -> None:
     if scheduler.running:
         scheduler.shutdown(wait=False)
+    workflow_state.update(scheduler_ready=False)

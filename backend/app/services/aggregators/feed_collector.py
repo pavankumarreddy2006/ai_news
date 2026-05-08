@@ -15,7 +15,7 @@ logger = get_logger(__name__)
 class FeedCollector:
     def fetch_all(self) -> list[dict]:
         records: list[dict] = []
-        for source in SOURCE_REGISTRY:
+        for source in self._source_registry():
             try:
                 if source["kind"] == "rss":
                     records.extend(self._fetch_rss(source))
@@ -24,6 +24,21 @@ class FeedCollector:
             except Exception as exc:
                 logger.warning("Collector failed for %s: %s", source["source"], exc)
         return records
+
+    def source_health(self) -> list[dict]:
+        health: list[dict] = []
+        for source in self._source_registry():
+            status = {"source": source["source"], "name": source["name"], "kind": source["kind"], "status": "ok", "url": source["url"]}
+            try:
+                if source["kind"] == "rss":
+                    self._fetch_rss(source)
+                else:
+                    self._fetch_html(source)
+            except Exception as exc:
+                status["status"] = "degraded"
+                status["reason"] = str(exc)
+            health.append(status)
+        return health
 
     def _fetch_rss(self, source: dict) -> list[dict]:
         with httpx.Client(
@@ -77,3 +92,6 @@ class FeedCollector:
         if entry.get("published_parsed"):
             return datetime(*entry.published_parsed[:6], tzinfo=timezone.utc)
         return datetime.now(timezone.utc)
+
+    def _source_registry(self) -> list[dict]:
+        return SOURCE_REGISTRY if isinstance(SOURCE_REGISTRY, list) else []
