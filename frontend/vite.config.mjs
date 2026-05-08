@@ -1,15 +1,35 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
+import { fileURLToPath, URL } from "node:url";
 
 export default defineConfig({
   plugins: [react()],
   resolve: {
     alias: {
-      "@": "/src",
+      "@": fileURLToPath(new URL("./src", import.meta.url)),
     },
   },
   server: {
+    host: "0.0.0.0",
     port: 5173,
   },
+  preview: {
+    host: "0.0.0.0",
+    port: 4173,
+  },
+  build: {
+    sourcemap: false,
+    target: "es2020",
+    cssCodeSplit: true,
+    chunkSizeWarningLimit: 900,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: ["react", "react-dom", "react-router-dom"],
+          motion: ["framer-motion"],
+          query: ["@tanstack/react-query", "axios", "zustand"],
+        },
+      },
+    },
+  },
 });
-

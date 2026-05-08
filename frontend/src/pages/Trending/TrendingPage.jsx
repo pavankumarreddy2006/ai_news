@@ -14,7 +14,7 @@ export function TrendingPage() {
         <h1 className="text-3xl font-semibold text-white">Trending AI</h1>
         <div className="mt-5 flex flex-wrap gap-3">
           {topics.map((topic) => (
-            <span key={topic.id} className="rounded-full border border-glow/30 px-4 py-2 text-sm text-glow">{topic.topic} · {topic.score}</span>
+            <span key={topic.id} className="rounded-full border border-glow/30 px-4 py-2 text-sm text-glow">{topic.topic} - {topic.score}</span>
           ))}
         </div>
       </section>
@@ -24,4 +24,3 @@ export function TrendingPage() {
     </div>
   );
 }
-

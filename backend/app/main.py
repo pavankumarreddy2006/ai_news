@@ -2,18 +2,20 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, WebSocket
 from fastapi.middleware.cors import CORSMiddleware
+from sqlalchemy import text
 
 from app.api.middleware.error_handler import unhandled_exception_handler
 from app.api.routes import categories, health, learn, live, news, preferences, recommendations, search, summary, telegram, tools, trending
 from app.api.dependencies.services import content_orchestrator
 from app.core.config.settings import get_settings
-from app.core.logging.logger import configure_logging
+from app.core.logging.logger import configure_logging, get_logger
 from app.database.session.engine import SessionLocal
 from app.database.session.init_db import initialize_database
 from app.workers.scheduler import start_scheduler, stop_scheduler
 
 settings = get_settings()
 configure_logging()
+logger = get_logger(__name__)
 
 
 @asynccontextmanager
@@ -21,7 +23,10 @@ async def lifespan(_: FastAPI):
     initialize_database()
     db = SessionLocal()
     try:
+        db.execute(text("SELECT 1"))
         content_orchestrator.run_refresh(db)
+    except Exception as exc:
+        logger.exception("Startup initialization failed: %s", exc)
     finally:
         db.close()
     start_scheduler()
@@ -37,7 +42,8 @@ app = FastAPI(
 )
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[settings.frontend_url, "http://localhost:5173", "http://127.0.0.1:5173"],
+    allow_origins=settings.allowed_cors_origins,
+    allow_origin_regex=r"https://.*\.onrender\.com",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -61,4 +67,3 @@ app.include_router(live.router)
 @app.websocket("/ws/live-updates")
 async def live_updates(websocket: WebSocket):
     await live.live_socket(websocket)
-

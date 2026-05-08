@@ -2,7 +2,7 @@ import { cn } from "../../utils/cn";
 
 export function Button({ className, variant = "primary", ...props }) {
   const variants = {
-    primary: "bg-gradient-to-r from-glow to-violetGlow text-white shadow-glow",
+    primary: "bg-gradient-to-r from-[#8fdcff] via-[#6ee7c8] to-[#ffd28a] text-slate-950 shadow-glow",
     secondary: "border border-white/10 bg-white/5 text-white",
     ghost: "text-slate-300 hover:text-white",
   };

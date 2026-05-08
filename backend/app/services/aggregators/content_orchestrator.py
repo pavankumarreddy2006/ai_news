@@ -59,6 +59,41 @@ FALLBACK_TOOLS = [
     },
 ]
 
+FALLBACK_ARTICLES = [
+    {
+        "title": "OpenAI expands enterprise AI workflows with safer agent handoffs",
+        "source": "AI News Platform",
+        "source_url": "https://aiupdates.local/fallback/openai-enterprise-workflows",
+        "image_url": "",
+        "category": "OpenAI",
+        "content_type": "news",
+    },
+    {
+        "title": "Developers are shipping more code copilots into daily product teams",
+        "source": "AI News Platform",
+        "source_url": "https://aiupdates.local/fallback/developer-copilots-daily-teams",
+        "image_url": "",
+        "category": "Coding AI",
+        "content_type": "tools",
+    },
+    {
+        "title": "AI automation stacks are moving from demos to real business workflows",
+        "source": "AI News Platform",
+        "source_url": "https://aiupdates.local/fallback/automation-stacks-business-workflows",
+        "image_url": "",
+        "category": "AI Agents",
+        "content_type": "launch",
+    },
+    {
+        "title": "New multimodal tools are making image and video creation easier for beginners",
+        "source": "AI News Platform",
+        "source_url": "https://aiupdates.local/fallback/multimodal-tools-beginners",
+        "image_url": "",
+        "category": "AI Tools",
+        "content_type": "tools",
+    },
+]
+
 
 class ContentOrchestrator:
     def __init__(self) -> None:
@@ -74,6 +109,8 @@ class ContentOrchestrator:
     def run_refresh(self, db: Session) -> dict:
         raw = self.collector.fetch_all()
         cleaned = self.cleaner.clean_records(raw)
+        if not cleaned:
+            cleaned = self._fallback_articles()
         stored = 0
         for record in cleaned:
             if self.news_repository.get_by_source_url(db, record["source_url"]):
@@ -111,6 +148,39 @@ class ContentOrchestrator:
             stored += 1
         self._seed_tools(db)
         articles = self.news_repository.list_news(db, limit=30)
+        if not articles:
+            for record in self._fallback_articles():
+                enriched = self.simplifier.enrich(record["title"], record["source"], record["category"])
+                scored = self.ranker.score({**record, **enriched})
+                self.news_repository.create(
+                    db,
+                    Article(
+                        title=scored["title"],
+                        slug=slugify(scored["title"])[:300],
+                        source=scored["source"],
+                        source_url=scored["source_url"],
+                        image_url=scored["image_url"],
+                        category=scored["category"],
+                        content_type=scored["content_type"],
+                        summary=scored["summary"],
+                        easy_summary=scored["easy_summary"],
+                        why_it_matters=scored["why_it_matters"],
+                        who_should_use_it=scored["who_should_use_it"],
+                        beginner_explanation=scored["beginner_explanation"],
+                        difficulty_level=scored["difficulty_level"],
+                        reading_time=scored["reading_time"],
+                        keywords=scored["keywords"],
+                        virality_score=scored["virality_score"],
+                        engagement_score=scored["engagement_score"],
+                        freshness_score=scored["freshness_score"],
+                        beginner_score=scored["beginner_score"],
+                        ranking_score=scored["ranking_score"],
+                        trending_score=scored["trending_score"],
+                        is_trending=scored["is_trending"],
+                        published_at=scored["published_at"],
+                    ),
+                )
+            articles = self.news_repository.list_news(db, limit=30)
         self.trending_repository.replace_all(db, self.trend_service.build_topics(articles))
         db.commit()
         return {"fetched": len(raw), "stored": stored, "categories": DEFAULT_CATEGORIES, "tool_categories": TOOL_CATEGORIES}
@@ -141,3 +211,6 @@ class ContentOrchestrator:
                 ),
             )
 
+    def _fallback_articles(self) -> list[dict]:
+        now = datetime.now(timezone.utc)
+        return [{**article, "published_at": now} for article in FALLBACK_ARTICLES]

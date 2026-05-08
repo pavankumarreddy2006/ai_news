@@ -11,10 +11,9 @@ export function ToolCard({ tool }) {
       <p className="mt-3 text-sm text-slate-300">{tool.simple_explanation}</p>
       <p className="mt-3 text-sm text-slate-400">{tool.features}</p>
       <div className="mt-auto pt-4 text-sm text-glow">
-        Rank {tool.ai_ranking} · Popularity {tool.popularity_score}
+        Rank {tool.ai_ranking} - Popularity {tool.popularity_score}
         <ExternalLink className="ml-2 inline h-4 w-4" />
       </div>
     </a>
   );
 }
-

@@ -1,5 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://example.com/sitemap.xml
-
+Sitemap: https://ai-news-frontend.onrender.com/sitemap.xml

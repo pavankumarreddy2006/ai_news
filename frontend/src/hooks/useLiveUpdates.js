@@ -1,12 +1,13 @@
 import { useEffect } from "react";
 import { usePlatformStore } from "@/store/usePlatformStore";
+import { getWsBaseUrl } from "@/utils/runtimeConfig";
 
 export function useLiveUpdates() {
   const addLiveEvent = usePlatformStore((state) => state.addLiveEvent);
   const addNotification = usePlatformStore((state) => state.addNotification);
 
   useEffect(() => {
-    const base = import.meta.env.VITE_WS_URL || "ws://localhost:10000";
+    const base = getWsBaseUrl();
     const socket = new WebSocket(`${base}/ws/live-updates`);
     socket.onmessage = (event) => {
       const payload = JSON.parse(event.data);
@@ -17,4 +18,3 @@ export function useLiveUpdates() {
     return () => socket.close();
   }, [addLiveEvent, addNotification]);
 }
-

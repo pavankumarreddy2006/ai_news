@@ -12,7 +12,10 @@ settings = get_settings()
 class TelegramService:
     def __init__(self) -> None:
         self.repository = UserRepository()
-        self.base_url = f"https://api.telegram.org/bot{settings.telegram_bot_token}"
+
+    @property
+    def base_url(self) -> str:
+        return f"https://api.telegram.org/bot{settings.telegram_bot_token}"
 
     def subscribe(self, db: Session, chat_id: str, username: str, first_name: str):
         user = self.repository.register_telegram_user(db, chat_id, username, first_name)
@@ -32,19 +35,26 @@ class TelegramService:
         if settings.telegram_default_chat_id and settings.telegram_default_chat_id not in chat_ids:
             chat_ids.append(settings.telegram_default_chat_id)
         sent = 0
-        if settings.telegram_bot_token and chat_ids:
+        status = "queued"
+        reason = ""
+        if not settings.telegram_bot_token:
+            reason = "Missing TELEGRAM_BOT_TOKEN."
+        elif not chat_ids:
+            reason = "No active Telegram subscribers configured."
+        else:
             async with httpx.AsyncClient(timeout=10.0) as client:
                 for chat_id in chat_ids:
                     response = await client.post(f"{self.base_url}/sendMessage", json={"chat_id": chat_id, "text": message})
                     if response.is_success:
                         sent += 1
+            status = "sent" if sent else "failed"
+            reason = "" if sent else "Telegram API did not accept any messages."
         self.repository.create_notification(
             db,
             channel="telegram",
             title="Daily AI Digest",
             message=f"{datetime.utcnow().isoformat()} :: {message}",
-            status="sent" if sent else "queued",
+            status=status,
         )
         db.commit()
-        return {"sent": sent, "message": message}
-
+        return {"sent": sent, "message": message, "status": status, "reason": reason}

@@ -26,11 +26,17 @@ def start_scheduler() -> None:
         return
     scheduler.add_job(_job_wrapper(run_refresh_job), "interval", minutes=settings.news_refresh_minutes, id="refresh-news")
     scheduler.add_job(_job_wrapper(run_cleanup_job), "interval", hours=12, id="cleanup-news")
-    scheduler.add_job(_job_wrapper(run_telegram_job), "cron", hour=8, minute=0, id="telegram-digest")
+    scheduler.add_job(
+        _job_wrapper(run_telegram_job),
+        "cron",
+        hour=settings.telegram_digest_hour,
+        minute=settings.telegram_digest_minute,
+        timezone=settings.telegram_digest_timezone,
+        id="telegram-digest",
+    )
     scheduler.start()
 
 
 def stop_scheduler() -> None:
     if scheduler.running:
         scheduler.shutdown(wait=False)
-

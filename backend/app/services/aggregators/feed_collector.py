@@ -26,7 +26,14 @@ class FeedCollector:
         return records
 
     def _fetch_rss(self, source: dict) -> list[dict]:
-        feed = feedparser.parse(source["url"])
+        with httpx.Client(
+            timeout=settings.request_timeout_seconds,
+            headers={"User-Agent": "AI News Platform/1.0", "Accept": "application/rss+xml, application/xml, text/xml;q=0.9, */*;q=0.8"},
+            follow_redirects=True,
+        ) as client:
+            response = client.get(source["url"])
+            response.raise_for_status()
+        feed = feedparser.parse(response.content)
         items: list[dict] = []
         for entry in feed.entries[: settings.max_news_items_per_source]:
             items.append(
@@ -70,4 +77,3 @@ class FeedCollector:
         if entry.get("published_parsed"):
             return datetime(*entry.published_parsed[:6], tzinfo=timezone.utc)
         return datetime.now(timezone.utc)
-
