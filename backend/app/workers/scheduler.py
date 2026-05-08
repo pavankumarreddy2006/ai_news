@@ -26,8 +26,8 @@ def start_scheduler() -> None:
     if not settings.enable_background_jobs or scheduler.running:
         workflow_state.update(scheduler_ready=settings.enable_background_jobs)
         return
-    scheduler.add_job(_job_wrapper(run_refresh_job), "interval", minutes=settings.refresh_interval_minutes, id="refresh-news")
-    scheduler.add_job(_job_wrapper(run_cleanup_job), "interval", hours=12, id="cleanup-news")
+    scheduler.add_job(_job_wrapper(run_refresh_job), "interval", minutes=settings.refresh_interval_minutes, id="refresh-news", replace_existing=True)
+    scheduler.add_job(_job_wrapper(run_cleanup_job), "interval", hours=12, id="cleanup-news", replace_existing=True)
     scheduler.add_job(
         _job_wrapper(run_telegram_job),
         "cron",
@@ -35,6 +35,7 @@ def start_scheduler() -> None:
         minute=settings.telegram_digest_minute,
         timezone=settings.telegram_digest_timezone,
         id="telegram-digest",
+        replace_existing=True,
     )
     scheduler.start()
     workflow_state.update(scheduler_ready=True)

@@ -48,11 +48,17 @@ class TelegramService:
         else:
             async with httpx.AsyncClient(timeout=10.0) as client:
                 for chat_id in chat_ids:
-                    response = await client.post(f"{self.base_url}/sendMessage", json={"chat_id": chat_id, "text": message})
-                    if response.is_success:
-                        sent += 1
+                    try:
+                        response = await client.post(f"{self.base_url}/sendMessage", json={"chat_id": chat_id, "text": message})
+                        if response.is_success:
+                            sent += 1
+                    except httpx.HTTPError as exc:
+                        reason = f"Telegram request failed: {exc}"
             status = "sent" if sent else "failed"
-            reason = "" if sent else "Telegram API did not accept any messages."
+            if sent:
+                reason = ""
+            elif not reason:
+                reason = "Telegram API did not accept any messages."
         self.repository.create_notification(
             db,
             channel="telegram",

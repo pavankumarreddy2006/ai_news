@@ -1,4 +1,5 @@
 from fastapi import WebSocket
+from starlette.websockets import WebSocketState
 
 
 class ConnectionManager:
@@ -16,6 +17,9 @@ class ConnectionManager:
     async def broadcast(self, payload: dict) -> None:
         stale: list[WebSocket] = []
         for connection in self.connections:
+            if connection.client_state != WebSocketState.CONNECTED:
+                stale.append(connection)
+                continue
             try:
                 await connection.send_json(payload)
             except Exception:

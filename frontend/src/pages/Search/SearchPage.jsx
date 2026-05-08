@@ -12,7 +12,7 @@ export function SearchPage() {
     <div className="space-y-8">
       <section className="glass rounded-[28px] p-6">
         <h1 className="text-3xl font-semibold text-white">Search AI</h1>
-        <p className="mt-2 text-sm text-slate-400">Results for “{query}”.</p>
+        <p className="mt-2 text-sm text-slate-400">Results for "{query}".</p>
       </section>
       <section>
         <h2 className="mb-4 text-xl font-semibold text-white">News</h2>
@@ -29,4 +29,3 @@ export function SearchPage() {
     </div>
   );
 }
-

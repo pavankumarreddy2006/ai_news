@@ -1,3 +1,4 @@
+import asyncio
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, WebSocket
@@ -19,6 +20,17 @@ configure_logging()
 logger = get_logger(__name__)
 
 
+async def _run_initial_refresh() -> None:
+    db = SessionLocal()
+    try:
+        result = await asyncio.to_thread(content_orchestrator.run_refresh, db)
+        workflow_state.update(last_refresh_result=result)
+    except Exception as exc:
+        logger.exception("Initial refresh failed: %s", exc)
+    finally:
+        db.close()
+
+
 @asynccontextmanager
 async def lifespan(_: FastAPI):
     workflow_state.update(app_started=True, live_updates_ready=settings.enable_live_updates)
@@ -31,13 +43,14 @@ async def lifespan(_: FastAPI):
             keys_valid=bool(settings.openai_api_key or settings.openrouter_api_key or settings.github_token or settings.telegram_bot_token),
             telegram_ready=bool(settings.telegram_bot_token),
         )
-        content_orchestrator.run_refresh(db)
     except Exception as exc:
         logger.exception("Startup initialization failed: %s", exc)
     finally:
         db.close()
     start_scheduler()
+    initial_refresh_task = asyncio.create_task(_run_initial_refresh())
     yield
+    initial_refresh_task.cancel()
     stop_scheduler()
 
 

@@ -34,6 +34,14 @@ class UserRepository:
         return preference
 
     def save_article(self, db: Session, session_id: str, article_id: int) -> SavedArticle:
+        existing = db.scalar(
+            select(SavedArticle).where(
+                SavedArticle.session_id == session_id,
+                SavedArticle.article_id == article_id,
+            )
+        )
+        if existing:
+            return existing
         saved = SavedArticle(session_id=session_id, article_id=article_id)
         db.add(saved)
         db.flush()
@@ -59,4 +67,3 @@ class UserRepository:
         db.add(notification)
         db.flush()
         return notification
-

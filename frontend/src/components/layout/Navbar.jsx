@@ -39,7 +39,7 @@ export function Navbar() {
           </span>
         </NavLink>
         <form
-          className="glass panel-strong flex min-w-[220px] flex-1 items-center gap-3 rounded-full px-4 py-2"
+          className="glass panel-strong flex min-w-[220px] flex-1 items-center gap-3 rounded-full px-4 py-2 lg:min-w-[280px]"
           onSubmit={(event) => {
             event.preventDefault();
             navigate(`/search?q=${encodeURIComponent(search)}`);
@@ -49,7 +49,7 @@ export function Navbar() {
           <input
             value={search}
             onChange={(event) => setSearch(event.target.value)}
-            className="w-full bg-transparent text-sm text-white outline-none placeholder:text-slate-500"
+            className="min-w-0 w-full bg-transparent text-sm text-white outline-none placeholder:text-slate-500"
             placeholder="Search AI news, tools, trends..."
           />
         </form>

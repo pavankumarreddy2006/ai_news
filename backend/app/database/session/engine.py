@@ -7,8 +7,9 @@ from sqlalchemy.orm import sessionmaker
 from app.core.config.settings import get_settings
 
 settings = get_settings()
-configured_database_url = settings.database_url
+configured_database_url = settings.normalized_database_url
 database_url = configured_database_url
+active_database_backend = "sqlite"
 
 if configured_database_url.startswith("sqlite:///"):
     sqlite_path = Path(configured_database_url.replace("sqlite:///", "", 1))
@@ -16,9 +17,11 @@ if configured_database_url.startswith("sqlite:///"):
         sqlite_path = (Path(__file__).resolve().parents[4] / sqlite_path).resolve()
     sqlite_path.parent.mkdir(parents=True, exist_ok=True)
     database_url = f"sqlite:///{sqlite_path.as_posix()}"
+    active_database_backend = "sqlite"
 else:
     sqlite_path = DEFAULT_SQLITE_PATH = (Path(__file__).resolve().parents[4] / "backend" / "data" / "ai_news.db")
     sqlite_path.parent.mkdir(parents=True, exist_ok=True)
+    active_database_backend = "postgres"
 
 
 def _build_engine(target_url: str):
@@ -39,7 +42,10 @@ if not database_url.startswith("sqlite"):
         with engine.connect() as connection:
             connection.execute(text("SELECT 1"))
     except SQLAlchemyError:
+        if settings.is_production:
+            raise
         database_url = f"sqlite:///{sqlite_path.as_posix()}"
         engine = _build_engine(database_url)
+        active_database_backend = "sqlite-fallback"
 
 SessionLocal = sessionmaker(bind=engine, autoflush=False, autocommit=False, future=True)

@@ -18,4 +18,5 @@ async def live_socket(websocket: WebSocket):
             await websocket.receive_text()
     except WebSocketDisconnect:
         live_connection_manager.disconnect(websocket)
-
+    except Exception:
+        live_connection_manager.disconnect(websocket)

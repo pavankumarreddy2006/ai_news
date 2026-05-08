@@ -26,20 +26,29 @@ export function HeroPanel({ categories }) {
           </div>
           <div className="mt-8 flex flex-wrap gap-3">
             {categories.map((category) => (
-              <button key={category} onClick={() => navigate(`/news?category=${encodeURIComponent(category)}`)} className="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-slate-200 transition hover:border-[#8fdcff]/40 hover:bg-white/10 hover:text-white">
+              <button
+                key={category}
+                type="button"
+                onClick={() => navigate(`/news?category=${encodeURIComponent(category)}`)}
+                className="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-slate-200 transition hover:border-[#8fdcff]/40 hover:bg-white/10 hover:text-white"
+              >
                 {category}
               </button>
             ))}
           </div>
         </div>
         <div className="glass panel-strong rounded-[28px] p-5">
-          <p className="text-xs uppercase tracking-[0.3em] text-[#ffd28a]">Today’s read</p>
+          <p className="text-xs uppercase tracking-[0.3em] text-[#ffd28a]">Today's read</p>
           <div className="mt-4 space-y-4">
             <div className="rounded-[24px] border border-white/10 bg-white/5 p-4">
               <p className="text-sm text-slate-300">What you get</p>
               <p className="mt-2 text-xl font-semibold text-white">Fast summaries, stronger signals, fewer dead feeds.</p>
             </div>
-            <button onClick={() => navigate("/trending")} className="flex w-full items-center justify-between rounded-[24px] border border-white/10 bg-[#8fdcff]/8 px-4 py-4 text-left transition hover:bg-[#8fdcff]/12">
+            <button
+              type="button"
+              onClick={() => navigate("/trending")}
+              className="flex w-full items-center justify-between rounded-[24px] border border-white/10 bg-[#8fdcff]/8 px-4 py-4 text-left transition hover:bg-[#8fdcff]/12"
+            >
               <div>
                 <p className="text-sm text-slate-300">Live pulse</p>
                 <p className="mt-1 text-base font-semibold text-white">See what is actually trending right now</p>

@@ -37,7 +37,7 @@ export function WorkflowStatusPanel({ workflow }) {
         </div>
         <div className="rounded-2xl border border-white/8 bg-white/5 p-4">
           <p className="text-xs uppercase tracking-[0.24em] text-slate-400">Tracked Records</p>
-          <p className="mt-2 text-sm text-white">{workflow?.counts?.articles || 0} news • {workflow?.counts?.tools || 0} tools</p>
+          <p className="mt-2 text-sm text-white">{workflow?.counts?.articles || 0} news - {workflow?.counts?.tools || 0} tools</p>
         </div>
       </div>
     </section>

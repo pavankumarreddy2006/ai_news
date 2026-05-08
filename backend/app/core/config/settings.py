@@ -71,8 +71,20 @@ class Settings(BaseSettings):
 
     @computed_field
     @property
+    def normalized_database_url(self) -> str:
+        if self.database_url.startswith("postgres://"):
+            return self.database_url.replace("postgres://", "postgresql://", 1)
+        return self.database_url
+
+    @computed_field
+    @property
     def is_production(self) -> bool:
         return self.app_env.lower() == "production"
+
+    @computed_field
+    @property
+    def is_render(self) -> bool:
+        return self.is_production or bool(self.backend_url.endswith(".onrender.com"))
 
     @computed_field
     @property

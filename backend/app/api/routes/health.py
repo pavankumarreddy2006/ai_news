@@ -4,7 +4,7 @@ from fastapi import APIRouter
 from sqlalchemy import text
 
 from app.core.config.settings import get_settings
-from app.database.session.engine import SessionLocal
+from app.database.session.engine import SessionLocal, active_database_backend
 
 router = APIRouter(tags=["health"])
 settings = get_settings()
@@ -25,5 +25,8 @@ def health():
         "status": "ok" if database_status == "ok" else "degraded",
         "environment": settings.app_env,
         "database": database_status,
+        "database_backend": active_database_backend,
+        "live_updates_enabled": settings.enable_live_updates,
+        "background_jobs_enabled": settings.enable_background_jobs,
         "timestamp": datetime.utcnow(),
     }

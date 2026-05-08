@@ -52,23 +52,23 @@ export function NewsCard({ item }) {
               <Bookmark className="mr-2 inline h-4 w-4" />
               Save
             </Button>
-            <a href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(item.title)}&url=${encodeURIComponent(item.source_url)}`} target="_blank" rel="noreferrer">
-              <Button variant="secondary">
+            <Button asChild variant="secondary">
+              <a href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(item.title)}&url=${encodeURIComponent(item.source_url)}`} target="_blank" rel="noreferrer">
                 <Share2 className="mr-2 inline h-4 w-4" />
                 Share
-              </Button>
-            </a>
-            <a href={item.source_url} target="_blank" rel="noreferrer">
-              <Button variant="secondary">
+              </a>
+            </Button>
+            <Button asChild variant="secondary">
+              <a href={item.source_url} target="_blank" rel="noreferrer">
                 <ExternalLink className="mr-2 inline h-4 w-4" />
                 Open
-              </Button>
-            </a>
+              </a>
+            </Button>
           </div>
           <div className="flex flex-wrap items-center gap-3 text-xs text-slate-400">
-            <button onClick={speech.pause}>Pause</button>
-            <button onClick={speech.resume}>Resume</button>
-            <button onClick={speech.stop}>Stop</button>
+            <button type="button" onClick={speech.pause}>Pause</button>
+            <button type="button" onClick={speech.resume}>Resume</button>
+            <button type="button" onClick={speech.stop}>Stop</button>
             <label className="flex items-center gap-2">
               Speed
               <input type="range" min="0.8" max="1.5" step="0.1" value={speech.speed} onChange={(e) => speech.setSpeed(Number(e.target.value))} />

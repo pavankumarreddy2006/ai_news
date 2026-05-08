@@ -20,6 +20,7 @@ export function SettingsPage() {
           {categories.map((category) => (
             <button
               key={category}
+              type="button"
               onClick={() => setSelected((current) => current.includes(category) ? current.filter((item) => item !== category) : [...current, category])}
               className={selected.includes(category) ? "rounded-full bg-glow px-4 py-2 text-sm text-night" : "rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-white"}
             >
@@ -37,4 +38,3 @@ export function SettingsPage() {
     </div>
   );
 }
-
