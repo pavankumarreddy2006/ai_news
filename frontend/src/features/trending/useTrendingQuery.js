@@ -5,6 +5,6 @@ export function useTrendingQuery() {
   return useQuery({
     queryKey: ["trending"],
     queryFn: platformApi.getTrending,
+    staleTime: 120_000,
   });
 }
-

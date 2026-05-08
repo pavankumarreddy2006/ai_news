@@ -15,6 +15,5 @@ tool_repository = ToolRepository()
 def recommendations(db: Session = Depends(get_db_session)):
     return recommendation_service.build_payload(
         news_repository.list_news(db, limit=8),
-        tool_repository.list_tools(db),
+        tool_repository.list_tools(db, limit=12),
     )
-

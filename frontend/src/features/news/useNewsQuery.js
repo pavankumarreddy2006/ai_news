@@ -5,6 +5,6 @@ export function useNewsQuery(category) {
   return useQuery({
     queryKey: ["news", category],
     queryFn: () => platformApi.getNews(category && category !== "All" ? { category } : undefined),
+    staleTime: 120_000,
   });
 }
-

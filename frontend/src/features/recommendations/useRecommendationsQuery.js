@@ -5,6 +5,6 @@ export function useRecommendationsQuery() {
   return useQuery({
     queryKey: ["recommendations"],
     queryFn: platformApi.getRecommendations,
+    staleTime: 120_000,
   });
 }
-

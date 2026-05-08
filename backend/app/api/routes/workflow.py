@@ -16,14 +16,12 @@ trending_repository = TrendingRepository()
 @router.get("")
 def get_workflow_status(db: Session = Depends(get_db_session)):
     state = workflow_state.snapshot()
-    articles = news_repository.list_news(db, limit=100)
-    tools = tool_repository.list_tools(db)
     trending = trending_repository.list_topics(db, limit=10)
     return {
         **state,
         "counts": {
-            "articles": len(articles),
-            "tools": len(tools),
+            "articles": news_repository.count_news(db),
+            "tools": tool_repository.count_tools(db),
             "trending_topics": len(trending),
         },
         "summary": {

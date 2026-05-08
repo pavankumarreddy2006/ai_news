@@ -34,7 +34,12 @@ class NewsRepository:
     def get_categories(self, db: Session) -> list[str]:
         return db.execute(select(func.distinct(Article.category))).scalars().all()
 
+    def count_news(self, db: Session, category: str | None = None) -> int:
+        query = select(func.count()).select_from(Article)
+        if category:
+            query = query.where(Article.category == category)
+        return int(db.scalar(query) or 0)
+
     def cleanup_before(self, db: Session, cutoff: datetime) -> int:
         result = db.execute(delete(Article).where(Article.created_at < cutoff))
         return result.rowcount or 0
-
